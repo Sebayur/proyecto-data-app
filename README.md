@@ -19,11 +19,76 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Visualización dinámica de usuarios
 - Búsqueda por nombre
 - Búsqueda por ciudad
+- Creacion de usuarios desde la interfaz
 
 ## Próximas mejoras
 
+- Editar usuarios
+- Eliminar usuarios
 - Dashboard con estadísticas
 - Gráficos interactivos
-- Filtros avanzados
-- Bootstrap
-- Exportación de datos
+- Importación de CSV
+- Exportación a Excel
+- Deploy de la aplicación
+
+## Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/Sebayur/proyecto-data-app.git
+```
+
+Entrar a la carpeta:
+
+```bash
+cd proyecto-data-app
+```
+
+Crear un entorno virtual:
+
+### Windows
+
+```bash
+python -m venv .venv
+```
+
+Activarlo:
+
+```bash
+.venv\Scripts\activate
+```
+
+Instalar las dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Ejecutar la aplicación
+
+Si la base de datos todavía no existe:
+
+```bash
+python crear_db.py
+```
+
+Luego iniciar Flask:
+
+```bash
+python app.py
+```
+
+Abrir el navegador en:
+
+```
+http://127.0.0.1:5000
+```
+
+## Autor
+
+**Sebastian Yurtgulu**
+
+Estudiante de Ingeniería Informática (FIUBA)
