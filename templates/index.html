@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data App</title>
+</head>
+<body>
+
+    <h1>Mis datos</h1>
+
+<table border="1" id="tabla">
+    <thead>
+        <tr>
+            <th>Ciudad</th>
+            <th>Edad</th>
+            <th>ID</th>
+            <th>Nombre</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<input type="text" id="buscador-nombre" placeholder="Buscar por nombre...">
+<input type="text" id="buscador-ciudad" placeholder="Buscar por ciudad...">
+
+<script>
+let datos = [];
+
+fetch("/data")
+    .then(response => response.json())
+    .then(data => {
+        datos = data;
+        mostrarDatos(data);
+    });
+
+function mostrarDatos(lista) {
+    const tabla = document.querySelector("#tabla tbody");
+    tabla.innerHTML = "";
+
+    lista.forEach(usuario => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+            <td>${usuario.ciudad}</td>
+            <td>${usuario.edad}</td>
+            <td>${usuario.id}</td>
+            <td>${usuario.nombre}</td>
+        `;
+
+        tabla.appendChild(fila);
+    });
+}
+
+function filtrar() {
+    const nombre = document.querySelector("#buscador-nombre").value.trim().toLowerCase();
+    const ciudad = document.querySelector("#buscador-ciudad").value.trim().toLowerCase();
+
+    const filtrados = datos.filter(u =>
+    (nombre === "" || u.nombre.toLowerCase().startsWith(nombre)) &&
+    (ciudad === "" || u.ciudad.toLowerCase().startsWith(ciudad))
+    );
+
+    mostrarDatos(filtrados);
+}
+
+document.querySelector("#buscador-nombre").addEventListener("input", filtrar);
+document.querySelector("#buscador-ciudad").addEventListener("input", filtrar);
+</script>
+
+</body>
+</html>
