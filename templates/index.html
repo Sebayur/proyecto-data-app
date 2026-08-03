@@ -36,7 +36,9 @@
 
     </div>
 
-    <h3 class="mt-4">Agregar usuario</h3>
+    <h3 class="mt-4" id="titulo-formulario">
+        Agregar usuario
+    </h3>
 
     <div class="row g-2 mb-4">
         <div class="col">
@@ -56,6 +58,12 @@
                 Agregar
             </button>
         </div>
+
+        <div class="col-auto">
+            <button class="btn btn-secondary d-none" id="cancelar"> 
+                Cancelar
+            </button>
+        </div>
     </div>
 
     <table class="table table-striped table-hover table-bordered shadow-sm" id="tabla">
@@ -67,6 +75,7 @@
                 <th>Nombre</th>
                 <th>Edad</th>
                 <th>Ciudad</th>
+                <th>Acciones</th>
             </tr>
 
         </thead>
@@ -81,6 +90,7 @@
 
 <script>
 let datos = [];
+let usuarioEditando = null;
 
 fetch("/data")
     .then(response => response.json())
@@ -88,6 +98,16 @@ fetch("/data")
         datos = data;
         mostrarDatos(data);
     });
+
+function limpiarFormulario() {
+
+    document.querySelector("#nombre").value = "";
+    document.querySelector("#edad").value = "";
+    document.querySelector("#ciudad").value = "";
+
+    document.querySelector("#nombre").focus();
+
+}
 
 function mostrarDatos(lista) {
     const tabla = document.querySelector("#tabla tbody");
@@ -101,10 +121,75 @@ function mostrarDatos(lista) {
             <td>${usuario.nombre}</td>
             <td>${usuario.edad}</td>
             <td>${usuario.ciudad}</td>
+
+            <td>
+                <button
+                    class="btn btn-warning btn-sm editar"
+                    data-id="${usuario.id}">
+                    ✏️
+                </button>
+                <button
+                    class="btn btn-danger btn-sm eliminar"
+                    data-id="${usuario.id}">
+                    🗑️
+                </button>
+            </td>
         `;
 
         tabla.appendChild(fila);
     });
+
+    document.querySelectorAll(".eliminar").forEach(boton => { // Los botones 🗑️ se crean cada vez que redibujamos la tabla.
+
+    boton.addEventListener("click", () => {
+
+        const id = boton.dataset.id;
+
+        if (!confirm("¿Eliminar este usuario?")) {
+            return;
+        }
+
+        fetch(`/eliminar/${id}`, {
+
+            method: "DELETE"
+
+        })
+        .then(() => fetch("/data"))
+        .then(res => res.json())
+        .then(data => {
+
+            datos = data;
+            mostrarDatos(datos);
+
+        });
+
+    });
+
+});
+    
+    document.querySelectorAll(".editar").forEach(boton => {
+
+    boton.addEventListener("click", () => {
+
+        const id = Number(boton.dataset.id);
+
+        const usuario = datos.find(u => u.id === id);
+
+        document.querySelector("#nombre").value = usuario.nombre;
+        document.querySelector("#edad").value = usuario.edad;
+        document.querySelector("#ciudad").value = usuario.ciudad;
+
+        usuarioEditando = id;
+
+        document.querySelector("#titulo-formulario").textContent = "Editar usuario";
+        document.querySelector("#agregar").textContent = "Guardar cambios";
+        document.querySelector("#agregar").classList.remove("btn-success");
+        document.querySelector("#agregar").classList.add("btn-warning");
+        document.querySelector("#cancelar").classList.remove("d-none");
+        document.querySelector("#nombre").focus();
+    });
+
+});
 }
 
 function filtrar() {
@@ -126,6 +211,54 @@ document.querySelector("#agregar").addEventListener("click", () => {
     const nombre = document.querySelector("#nombre").value;
     const edad = document.querySelector("#edad").value;
     const ciudad = document.querySelector("#ciudad").value;
+
+    if (!nombre || !edad || !ciudad) {
+        alert("Debe completar todos los campos.");
+        return;
+    }
+
+    if (edad < 0 || edad > 120) {
+        alert("Ingrese una edad válida.");
+        return;
+    }
+
+    if (usuarioEditando !== null) {
+
+    fetch(`/editar/${usuarioEditando}`, {
+
+        method: "PUT",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            nombre,
+            edad,
+            ciudad
+        })
+
+    })
+    .then(() => fetch("/data"))
+    .then(res => res.json())
+    .then(data => {
+
+        datos = data;
+        mostrarDatos(datos);
+
+        usuarioEditando = null;
+        document.querySelector("#titulo-formulario").textContent = "Agregar usuario";
+        limpiarFormulario();
+
+        document.querySelector("#agregar").textContent = "Agregar";
+        document.querySelector("#agregar").classList.remove("btn-warning");
+        document.querySelector("#agregar").classList.add("btn-success");
+        document.querySelector("#cancelar").classList.remove("d-none");
+
+    });
+
+    return;
+    }
 
     fetch("/agregar", {
 
@@ -154,11 +287,24 @@ document.querySelector("#agregar").addEventListener("click", () => {
         datos = data;
         mostrarDatos(datos);
 
-        document.querySelector("#nombre").value = "";
-        document.querySelector("#edad").value = "";
-        document.querySelector("#ciudad").value = "";
+        limpiarFormulario();
 
     });
+
+});
+
+document.querySelector("#cancelar").addEventListener("click", () => {
+
+    usuarioEditando = null;
+
+    limpiarFormulario();
+
+    document.querySelector("#agregar").textContent = "Agregar";
+    document.querySelector("#agregar").classList.remove("btn-warning");
+    document.querySelector("#agregar").classList.add("btn-success");
+
+    document.querySelector("#cancelar").classList.add("d-none");
+    document.querySelector("#titulo-formulario").textContent = "Agregar usuario";
 
 });
 </script>

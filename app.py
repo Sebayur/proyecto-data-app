@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 import pandas as pd
-from sqlalchemy import create_engine 
+from sqlalchemy import create_engine, text
 
 engine = create_engine("sqlite:///database/app.db")
 
@@ -47,6 +47,45 @@ def agregar_usuario():
     )
 
     return {"mensaje": "Usuario agregado correctamente"}
+
+@app.route("/eliminar/<int:id>", methods=["DELETE"]) #Cuando JavaScript llame: DELETE /eliminar/5 Flask ejecutará el SQL: DELETE FROM usuarios WHERE id = 5; y responderá: "mensaje": "Usuario eliminado correctamente"
+def eliminar_usuario(id):
+
+    with engine.begin() as conexion:
+        conexion.execute(
+            text("DELETE FROM usuarios WHERE id = :id"),
+            {"id": id}
+        )
+
+    return {"mensaje": "Usuario eliminado correctamente"}
+
+@app.route("/editar/<int:id>", methods=["PUT"])
+def editar_usuario(id):
+
+    datos = request.json
+
+    nombre = datos["nombre"]
+    edad = datos["edad"]
+    ciudad = datos["ciudad"]
+
+    with engine.begin() as conexion:
+        conexion.execute(
+            text("""
+                UPDATE usuarios
+                SET nombre = :nombre,
+                    edad = :edad,
+                    ciudad = :ciudad
+                WHERE id = :id
+            """),
+            {
+                "id": id,
+                "nombre": nombre,
+                "edad": edad,
+                "ciudad": ciudad
+            }
+        )
+
+    return {"mensaje": "Usuario actualizado correctamente"}
 
 @app.route("/usuarios/<int:id>")
 def get_usuario(id):

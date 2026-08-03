@@ -20,11 +20,11 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Búsqueda por nombre
 - Búsqueda por ciudad
 - Creacion de usuarios desde la interfaz
+- Eliminar un usuario desde la interfaz
+- Editar los datos de un usuario desde la interfaz
 
 ## Próximas mejoras
 
-- Editar usuarios
-- Eliminar usuarios
 - Dashboard con estadísticas
 - Gráficos interactivos
 - Importación de CSV
