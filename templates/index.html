@@ -79,6 +79,19 @@
 
     </div>
 
+    <div class="row mt-4">
+
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-5">
+                <div class="card-body">
+                    <h5>Distribución de edades</h5>
+                    <canvas id="graficoEdades"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="row mb-3">
 
         <div class="col-md-6">
@@ -156,6 +169,7 @@ let datos = [];
 let usuarioEditando = null;
 let graficoCiudades = null;
 let graficoTorta = null;
+let graficoEdades;
 
 fetch("/data")
     .then(response => response.json())
@@ -164,6 +178,7 @@ fetch("/data")
         mostrarDatos(data);
         actualizarDashboard(data);
         actualizarGraficos(data);
+        actualizarGraficoEdades(data);
     });
 
 function limpiarFormulario() {
@@ -229,6 +244,7 @@ function mostrarDatos(lista) {
             mostrarDatos(datos);
             actualizarDashboard(datos);
             actualizarGraficos(datos);
+            actualizarGraficoEdades(datos);
 
         });
 
@@ -348,6 +364,62 @@ function actualizarGraficos(lista) {
     );
 }
 
+function actualizarGraficoEdades(lista){
+
+    let rangos = {
+        "18-29":0,
+        "30-39":0,
+        "40-49":0,
+        "50-59":0,
+        "60+":0
+    };
+
+    lista.forEach(usuario => {
+
+        if(usuario.edad <= 29)
+            rangos["18-29"]++;
+
+        else if(usuario.edad <= 39)
+            rangos["30-39"]++;
+
+        else if(usuario.edad <= 49)
+            rangos["40-49"]++;
+
+        else if(usuario.edad <= 59)
+            rangos["50-59"]++;
+
+        else
+            rangos["60+"]++;
+
+    });
+
+    if(graficoEdades){
+        graficoEdades.destroy();
+    }
+
+    graficoEdades = new Chart(
+        document.getElementById("graficoEdades"),
+        {
+            type:"bar",
+
+            data:{
+                labels:Object.keys(rangos),
+
+                datasets:[{
+                    label:"Usuarios",
+
+                    data:Object.values(rangos)
+                }]
+            },
+
+            options:{
+                responsive:true
+            }
+        }
+    );
+
+}
+
 function filtrar() {
     const nombre = document.querySelector("#buscador-nombre").value.trim().toLowerCase();
     const ciudad = document.querySelector("#buscador-ciudad").value.trim().toLowerCase();
@@ -360,6 +432,7 @@ function filtrar() {
     mostrarDatos(filtrados);
     actualizarDashboard(filtrados);
     actualizarGraficos(filtrados);
+    actualizarGraficoEdades(filtrados);
 }
 
 document.querySelector("#buscador-nombre").addEventListener("input", filtrar);
@@ -405,6 +478,7 @@ document.querySelector("#agregar").addEventListener("click", () => {
         mostrarDatos(datos);
         actualizarDashboard(datos);
         actualizarGraficos(datos);
+        actualizarGraficoEdades(datos);
 
         usuarioEditando = null;
         document.querySelector("#titulo-formulario").textContent = "Agregar usuario";
@@ -448,6 +522,7 @@ document.querySelector("#agregar").addEventListener("click", () => {
         mostrarDatos(datos);
         actualizarDashboard(datos);
         actualizarGraficos(datos);
+        actualizarGraficoEdades(datos);
         limpiarFormulario();
 
     });
