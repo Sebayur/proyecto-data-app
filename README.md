@@ -22,11 +22,11 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Creacion de usuarios desde la interfaz
 - Eliminar un usuario desde la interfaz
 - Editar los datos de un usuario desde la interfaz
+- Dashboard con estadísticas
+- Gráficos interactivos
 
 ## Próximas mejoras
 
-- Dashboard con estadísticas
-- Gráficos interactivos
 - Importación de CSV
 - Exportación a Excel
 - Deploy de la aplicación
