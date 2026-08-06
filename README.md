@@ -2,6 +2,8 @@
 
 Aplicación web desarrollada con Python y Flask para gestionar y visualizar datos de usuarios.
 
+![Vista principal](images/dashboard.png)
+
 ## Tecnologías
 
 - Python
@@ -24,10 +26,11 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Editar los datos de un usuario desde la interfaz
 - Dashboard con estadísticas
 - Gráficos interactivos
+- Ordenamiento ascendente o descendente por columna
+- Exportacion de CSV
 
 ## Próximas mejoras
 
-- Importación de CSV
 - Exportación a Excel
 - Deploy de la aplicación
 
@@ -86,6 +89,32 @@ Abrir el navegador en:
 ```
 http://127.0.0.1:5000
 ```
+
+## Capturas
+
+## Dashboard principal
+
+Vista principal de la aplicación.
+
+![Dashboard](images/dashboard.png)
+
+## Gestión de usuarios
+
+Agregar, editar y eliminar usuarios.
+
+![CRUD](images/crud.png)
+
+## Estadísticas
+
+Gráficos generados automáticamente.
+
+![Charts](images/charts.png)
+
+## Exportación CSV
+
+Exportación de la información.
+
+![CSV](images/export_csv.png)
 
 ## Autor
 

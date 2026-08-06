@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file
 import pandas as pd
 from sqlalchemy import create_engine, text
+import io
 
 engine = create_engine("sqlite:///database/app.db")
 
@@ -96,6 +97,24 @@ def get_usuario(id):
               return {"error": "Usuario no encontrado"}, 404
        
        return jsonify(usuario.to_dict(orient="records")[0])
+
+@app.route("/export/csv")
+def exportar_csv():
+
+    df = obtener_usuarios() #Lee la tabla de la base de datos y la guarda en un DataFrame.
+
+    buffer = io.StringIO()
+
+    df.to_csv(buffer, index=False) #Convierte el DataFrame a CSV y lo guarda en un buffer de memoria.
+
+    buffer.seek(0)
+
+    return send_file(
+        io.BytesIO(buffer.getvalue().encode()),
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="usuarios.csv"
+    )
 
 if __name__ == "__main__":
        app.run(debug=True)

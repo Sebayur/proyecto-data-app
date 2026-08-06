@@ -139,21 +139,41 @@
         </div>
 
         <div class="col-auto">
+            <button class="btn btn-primary" id="exportar">
+                📄 Exportar CSV
+            </button>
+        </div>
+
+        <div class="col-auto">
             <button class="btn btn-secondary d-none" id="cancelar"> 
                 Cancelar
             </button>
         </div>
     </div>
 
+    <style>
+    .ordenable {
+        cursor: pointer;
+    }
+    </style>
+
     <table class="table table-striped table-hover table-bordered shadow-sm" id="tabla">
 
         <thead class="table-dark">
 
             <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Edad</th>
-                <th>Ciudad</th>
+                <th id="th-id" class="ordenable" onclick="ordenar('id')">
+                    ID
+                </th>
+                <th id="th-nombre" class="ordenable" onclick="ordenar('nombre')">
+                    Nombre
+                </th>
+                <th id="th-edad" class="ordenable" onclick="ordenar('edad')">
+                    Edad
+                </th>
+                <th id="th-ciudad" class="ordenable" onclick="ordenar('ciudad')">
+                    Ciudad
+                </th>
                 <th>Acciones</th>
             </tr>
 
@@ -169,6 +189,10 @@
 
 <script>
 let datos = [];
+let ordenActual = {
+    columna: "",
+    asc: true
+};
 let usuarioEditando = null;
 let graficoCiudades = null;
 let graficoTorta = null;
@@ -545,6 +569,49 @@ document.querySelector("#cancelar").addEventListener("click", () => {
     document.querySelector("#cancelar").classList.add("d-none");
     document.querySelector("#titulo-formulario").textContent = "Agregar usuario";
 
+});
+
+function ordenar(columna) {
+
+    if (ordenActual.columna === columna) {
+        ordenActual.asc = !ordenActual.asc;
+    } else {
+        ordenActual.columna = columna;
+        ordenActual.asc = true;
+    }
+
+    datos.sort((a, b) => {
+
+        if (a[columna] < b[columna])
+            return ordenActual.asc ? -1 : 1;
+
+        if (a[columna] > b[columna])
+            return ordenActual.asc ? 1 : -1;
+
+        return 0;
+    });
+
+    filtrar();
+    actualizarFlechas();
+}
+
+function actualizarFlechas() {
+
+    document.querySelector("#th-id").textContent = "ID";
+    document.querySelector("#th-nombre").textContent = "Nombre";
+    document.querySelector("#th-edad").textContent = "Edad";
+    document.querySelector("#th-ciudad").textContent = "Ciudad";
+
+    if (ordenActual.columna !== "") {
+
+        const flecha = ordenActual.asc ? " ▲" : " ▼";
+
+        document.querySelector("#th-" + ordenActual.columna).textContent += flecha;
+    }
+}
+
+document.querySelector("#exportar").addEventListener("click", () => {
+    window.location.href = "/export/csv";
 });
 </script>
 
