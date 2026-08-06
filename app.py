@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 import pandas as pd
 from sqlalchemy import create_engine, text
 import io
+from validators import validar_usuario
 
 engine = create_engine("sqlite:///database/app.db")
 
@@ -28,6 +29,11 @@ def agregar_usuario():
     nombre = datos["nombre"]
     edad = datos["edad"]
     ciudad = datos["ciudad"]
+
+    error = validar_usuario(nombre, edad, ciudad)
+
+    if error:
+        return {"error": error}, 400
 
     df = obtener_usuarios()
 
@@ -68,6 +74,11 @@ def editar_usuario(id):
     nombre = datos["nombre"]
     edad = datos["edad"]
     ciudad = datos["ciudad"]
+
+    error = validar_usuario(nombre, edad, ciudad)
+
+    if error:
+        return {"error": error}, 400
 
     with engine.begin() as conexion:
         conexion.execute(

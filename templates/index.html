@@ -11,6 +11,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
 
@@ -58,7 +59,7 @@
         </div>
     </div>
 
-</div>
+    </div>
 
     <div class="row mb-4">
 
@@ -180,10 +181,41 @@
         </thead>
 
         <tbody>
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+                <div id="toastMensaje"
+                    class="toast"
+                    role="alert">
+
+                    <div class="toast-header">
+
+                        <strong class="me-auto" id="toastTitulo">
+                            Mensaje
+                        </strong>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="toast">
+                        </button>
+
+                    </div>
+
+                    <div class="toast-body" id="toastTexto">
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </tbody>
 
     </table>
+
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center" id="paginacion"></ul>
+    </nav>
 
 </div>
 
@@ -197,12 +229,16 @@ let usuarioEditando = null;
 let graficoCiudades = null;
 let graficoTorta = null;
 let graficoEdades;
+let usuarios = [];
+let paginaActual = 1;
+const filasPorPagina = 5;
 
 fetch("/data")
     .then(response => response.json())
     .then(data => {
         datos = data;
         mostrarDatos(data);
+        actualizarPaginacion(data);
         actualizarDashboard(data);
         actualizarGraficos(data);
         actualizarGraficoEdades(data);
@@ -222,7 +258,12 @@ function mostrarDatos(lista) {
     const tabla = document.querySelector("#tabla tbody");
     tabla.innerHTML = "";
 
-    lista.forEach(usuario => {
+    const inicio = (paginaActual - 1) * filasPorPagina;
+    const fin = inicio + filasPorPagina;
+
+    const usuariosPagina = lista.slice(inicio, fin);
+
+    usuariosPagina.forEach(usuario => {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
@@ -269,9 +310,14 @@ function mostrarDatos(lista) {
 
             datos = data;
             mostrarDatos(datos);
+            actualizarPaginacion(datos);
             actualizarDashboard(datos);
             actualizarGraficos(datos);
             actualizarGraficoEdades(datos);
+            mostrarToast(
+                "Éxito",
+                "Usuario eliminado correctamente."
+            );
 
         });
 
@@ -457,6 +503,7 @@ function filtrar() {
     );
 
     mostrarDatos(filtrados);
+    actualizarPaginacion(filtrados);
     actualizarDashboard(filtrados);
     actualizarGraficos(filtrados);
     actualizarGraficoEdades(filtrados);
@@ -471,12 +518,34 @@ document.querySelector("#agregar").addEventListener("click", () => {
     const ciudad = document.querySelector("#ciudad").value;
 
     if (!nombre || !edad || !ciudad) {
-        alert("Debe completar todos los campos.");
+        mostrarToast(
+            "Error",
+            "Debe completar todos los campos."
+        );
         return;
     }
 
-    if (edad < 0 || edad > 120) {
-        alert("Ingrese una edad válida.");
+    if (nombre.trim().length < 2) {
+        mostrarToast(
+            "Error",
+            "El nombre debe tener al menos 2 caracteres."
+        );
+        return;
+    }
+
+    if (!Number.isInteger(Number(edad)) || edad < 0 || edad > 120) {
+        mostrarToast(
+            "Error",
+            "La edad debe ser un número entre 0 y 120."
+        );
+        return;
+    }
+
+    if (ciudad.trim().length < 2) {
+        mostrarToast(
+            "Error",
+            "La ciudad debe tener al menos 2 caracteres."
+        );
         return;
     }
 
@@ -503,9 +572,14 @@ document.querySelector("#agregar").addEventListener("click", () => {
 
         datos = data;
         mostrarDatos(datos);
+        actualizarPaginacion(datos);    
         actualizarDashboard(datos);
         actualizarGraficos(datos);
         actualizarGraficoEdades(datos);
+        mostrarToast(
+            "Éxito",
+            "Usuario actualizado correctamente."
+        );
 
         usuarioEditando = null;
         document.querySelector("#titulo-formulario").textContent = "Agregar usuario";
@@ -547,10 +621,15 @@ document.querySelector("#agregar").addEventListener("click", () => {
 
         datos = data;
         mostrarDatos(datos);
+        actualizarPaginacion(datos);
         actualizarDashboard(datos);
         actualizarGraficos(datos);
         actualizarGraficoEdades(datos);
         limpiarFormulario();
+        mostrarToast(
+            "Éxito",
+            "Usuario agregado correctamente."
+        );
 
     });
 
@@ -613,6 +692,54 @@ function actualizarFlechas() {
 document.querySelector("#exportar").addEventListener("click", () => {
     window.location.href = "/export/csv";
 });
+
+function mostrarToast(titulo, mensaje){
+
+    document.querySelector("#toastTitulo").textContent = titulo;
+    document.querySelector("#toastTexto").textContent = mensaje;
+
+    const toast = new bootstrap.Toast(
+        document.querySelector("#toastMensaje")
+    );
+
+    toast.show();
+}
+
+function actualizarPaginacion(datos) {
+
+    const totalPaginas = Math.ceil(datos.length / filasPorPagina);
+
+    const contenedor = document.getElementById("paginacion");
+    contenedor.innerHTML = "";
+
+    for (let i = 1; i <= totalPaginas; i++) {
+
+        const li = document.createElement("li");
+        li.className = "page-item";
+
+        if (i === paginaActual)
+            li.classList.add("active");
+
+        li.innerHTML = `
+            <a class="page-link" href="#">${i}</a>
+        `;
+
+        li.onclick = function(e) {
+
+            e.preventDefault();
+
+            paginaActual = i;
+
+            mostrarDatos(datos);
+            actualizarPaginacion(datos);
+
+        };
+
+        contenedor.appendChild(li);
+
+    }
+
+}
 </script>
 
 </body>
