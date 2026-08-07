@@ -287,6 +287,50 @@
 
 </div>
 
+<!-- Modal eliminar usuario -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar usuario</h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                ¿Está seguro de que desea eliminar este usuario?
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    id="confirmarEliminar">
+                    Eliminar
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 <script>
 let datos = [];
 let ordenActual = {
@@ -357,41 +401,49 @@ function mostrarDatos(lista) {
         tabla.appendChild(fila);
     });
 
-    document.querySelectorAll(".eliminar").forEach(boton => { // Los botones 🗑️ se crean cada vez que redibujamos la tabla.
+    document.querySelectorAll(".eliminar").forEach(boton => {
 
-    boton.addEventListener("click", () => {
+        boton.addEventListener("click", () => {
 
-        const id = boton.dataset.id;
+            const id = boton.dataset.id;
 
-        if (!confirm("¿Eliminar este usuario?")) {
-            return;
-        }
-
-        fetch(`/eliminar/${id}`, {
-
-            method: "DELETE"
-
-        })
-        .then(() => fetch("/data"))
-        .then(res => res.json())
-        .then(data => {
-
-            datos = data;
-            mostrarDatos(datos);
-            actualizarPaginacion(datos);
-            actualizarDashboard(datos);
-            actualizarGraficos(datos);
-            actualizarGraficoEdades(datos);
-            mostrarToast(
-                "Éxito",
-                "Usuario eliminado correctamente."
+            const modal = new bootstrap.Modal(
+                document.querySelector("#modalEliminar")
             );
+
+            modal.show();
+
+            document.querySelector("#confirmarEliminar").onclick = () => {
+
+                fetch(`/eliminar/${id}`, {
+                    method: "DELETE"
+                })
+                .then(() => fetch("/data"))
+                .then(res => res.json())
+                .then(data => {
+
+                    datos = data;
+
+                    mostrarDatos(datos);
+                    actualizarPaginacion(datos);
+                    actualizarDashboard(datos);
+                    actualizarGraficos(datos);
+                    actualizarGraficoEdades(datos);
+
+                    modal.hide();
+
+                    mostrarToast(
+                        "Éxito",
+                        "Usuario eliminado correctamente."
+                    );
+
+                });
+
+            };
 
         });
 
     });
-
-});
     
     document.querySelectorAll(".editar").forEach(boton => {
 
