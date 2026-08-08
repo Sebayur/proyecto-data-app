@@ -214,9 +214,14 @@
         </div>
 
         <div class="col-auto">
-            <button class="btn btn-primary" id="exportar">
-                📄 Exportar CSV
-            </button>
+            <div class="btn-group" role="group" aria-label="Exportar">
+                <button class="btn btn-primary" id="exportar">
+                    📄 Exportar CSV
+                </button>
+                <button class="btn btn-primary" id="exportar-xlsx">
+                    📄 Exportar Excel
+                </button>
+            </div>
         </div>
 
         <div class="col-auto">
@@ -859,6 +864,14 @@ function actualizarFlechas() {
 document.querySelector("#exportar").addEventListener("click", () => {
     window.location.href = "/export/csv";
 });
+
+// Nuevo botón para descargar XLSX
+const btnXlsx = document.querySelector("#exportar-xlsx");
+if (btnXlsx) {
+    btnXlsx.addEventListener("click", () => {
+        window.location.href = "/export/xlsx";
+    });
+}
 
 function mostrarToast(titulo, mensaje){
 

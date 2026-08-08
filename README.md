@@ -28,10 +28,10 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Gráficos interactivos
 - Ordenamiento ascendente o descendente por columna
 - Exportacion de CSV
+- Exportacion de Excel
 
 ## Próximas mejoras
 
-- Exportación a Excel
 - Deploy de la aplicación
 
 ## Instalación

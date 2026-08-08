@@ -127,5 +127,43 @@ def exportar_csv():
         download_name="usuarios.csv"
     )
 
+
+@app.route("/export/xlsx")
+def exportar_xlsx():
+    """Exporta los usuarios a un archivo Excel (.xlsx).
+
+    Si no está disponible el motor de Excel (por ejemplo openpyxl no instalado),
+    cae de vuelta a CSV para asegurar que el usuario pueda descargar los datos.
+    """
+    df = obtener_usuarios()
+
+    # Intentar generar Excel en memoria
+    output = io.BytesIO()
+
+    try:
+        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="Usuarios")
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name="usuarios.xlsx"
+        )
+
+    except Exception:
+        # Si falla la creación de XLSX (p.ej. falta openpyxl), devolver CSV como fallback
+        buffer = io.StringIO()
+        df.to_csv(buffer, index=False)
+        buffer.seek(0)
+
+        return send_file(
+            io.BytesIO(buffer.getvalue().encode()),
+            mimetype="text/csv",
+            as_attachment=True,
+            download_name="usuarios.xlsx"
+        )
+
 if __name__ == "__main__":
        app.run(debug=True)
