@@ -418,8 +418,22 @@ function mostrarDatos(lista) {
                 fetch(`/eliminar/${id}`, {
                     method: "DELETE"
                 })
-                .then(() => fetch("/data"))
-                .then(res => res.json())
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error("No se pudo eliminar el usuario.");
+                    }
+
+                    return fetch("/data");
+                })
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error("No se pudieron cargar los usuarios.");
+                    }
+
+                    return response.json();
+                })
                 .then(data => {
 
                     datos = data;
@@ -435,6 +449,16 @@ function mostrarDatos(lista) {
                     mostrarToast(
                         "Éxito",
                         "Usuario eliminado correctamente."
+                    );
+
+                })
+                .catch(error => {
+
+                    modal.hide();
+
+                    mostrarToast(
+                        "Error",
+                        error.message
                     );
 
                 });
@@ -716,45 +740,68 @@ document.querySelector("#agregar").addEventListener("click", () => {
     }
 
     fetch("/agregar", {
-
         method: "POST",
-
         headers: {
             "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
-            nombre,
-            edad,
-            ciudad
+            nombre: nombre,
+            edad: edad,
+            ciudad: ciudad
         })
+    })
+    .then(async response => {
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || "No se pudo agregar el usuario."
+            );
+        }
+
+        return data;
 
     })
-    .then(res => res.json())
-    .then(() => {
+    .then(() => fetch("/data"))
+    .then(async response => {
 
-        return fetch("/data");
+        if (!response.ok) {
+            throw new Error(
+                "No se pudieron cargar los usuarios."
+            );
+        }
+
+        return response.json();
 
     })
-    .then(res => res.json())
     .then(data => {
 
         datos = data;
+
         mostrarDatos(datos);
         actualizarPaginacion(datos);
         actualizarDashboard(datos);
         actualizarGraficos(datos);
         actualizarGraficoEdades(datos);
+
         limpiarFormulario();
+
         mostrarToast(
             "Éxito",
             "Usuario agregado correctamente."
         );
 
+    })
+    .catch(error => {
+
+        mostrarToast(
+            "Error",
+            error.message
+        );
+
     });
-
 });
-
 document.querySelector("#cancelar").addEventListener("click", () => {
 
     usuarioEditando = null;
