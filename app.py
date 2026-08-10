@@ -59,10 +59,13 @@ def agregar_usuario():
 def eliminar_usuario(id):
 
     with engine.begin() as conexion:
-        conexion.execute(
+        resultado = conexion.execute(
             text("DELETE FROM usuarios WHERE id = :id"),
             {"id": id}
         )
+
+    if resultado.rowcount == 0:
+        return {"error": "Usuario no encontrado"}, 404
 
     return {"mensaje": "Usuario eliminado correctamente"}
 
@@ -81,7 +84,7 @@ def editar_usuario(id):
         return {"error": error}, 400
 
     with engine.begin() as conexion:
-        conexion.execute(
+        resultado = conexion.execute(
             text("""
                 UPDATE usuarios
                 SET nombre = :nombre,
@@ -96,6 +99,9 @@ def editar_usuario(id):
                 "ciudad": ciudad
             }
         )
+
+    if resultado.rowcount == 0:
+        return {"error": "Usuario no encontrado"}, 404    
 
     return {"mensaje": "Usuario actualizado correctamente"}
 
