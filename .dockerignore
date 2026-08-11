@@ -1,0 +1,8 @@
+# Esto evita copiar al contenedor cosas innecesarias.
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.git/
+.gitignore
+*.pyc
