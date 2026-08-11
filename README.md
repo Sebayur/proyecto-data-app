@@ -9,26 +9,66 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 - Python
 - Flask
 - SQLite
-- Pandas
 - SQLAlchemy
+- Pandas
+- OpenPyXL
 - HTML
+- CSS
 - JavaScript
+- Bootstrap
+- Chart.js
+- Pytest
+- Docker
 
-## Funcionalidades actuales
+## Funcionalidades
 
-- API REST con Flask
-- Base de datos SQLite
-- Visualización dinámica de usuarios
+### Gestión de usuarios
+
+- Visualización de usuarios almacenados en SQLite
+- Creación de usuarios desde la interfaz
+- Edición de usuarios
+- Eliminación de usuarios
+- Validación de datos
+- Manejo de errores
+
+### Búsqueda y navegación
+
 - Búsqueda por nombre
 - Búsqueda por ciudad
-- Creacion de usuarios desde la interfaz
-- Eliminar un usuario desde la interfaz
-- Editar los datos de un usuario desde la interfaz
-- Dashboard con estadísticas
+- Ordenamiento ascendente y descendente por columna
+- Paginación de resultados
+
+### Dashboard
+
+- Cantidad total de usuarios
+- Edad promedio
+- Cantidad de ciudades
+- Mayor edad registrada
+- Distribución de usuarios por ciudad
+- Distribución de usuarios por rango de edad
 - Gráficos interactivos
-- Ordenamiento ascendente o descendente por columna
-- Exportacion de CSV
-- Exportacion de Excel
+
+### Exportación
+
+- Exportación de datos a CSV
+- Exportación de datos a Excel (.xlsx)
+
+### Interfaz
+
+- Modo oscuro
+- Persistencia del modo oscuro mediante `localStorage`
+- Notificaciones mediante Toasts
+- Confirmación antes de eliminar usuarios
+- Interfaz responsive
+
+### Testing
+
+- Tests automatizados con Pytest
+- Tests de endpoints de Flask
+- Tests de validaciones
+- Tests de creación, edición y eliminación
+- Tests de exportación
+- Manejo de usuarios inexistentes
 
 ## Próximas mejoras
 
@@ -50,7 +90,7 @@ cd proyecto-data-app
 
 Crear un entorno virtual:
 
-### Windows
+## Windows
 
 ```bash
 python -m venv .venv
@@ -70,13 +110,15 @@ pip install -r requirements.txt
 
 ---
 
-## Ejecutar la aplicación
+## Base de datos
 
 Si la base de datos todavía no existe:
 
 ```bash
 python crear_db.py
 ```
+
+## Ejecutar la aplicacion
 
 Luego iniciar Flask:
 
@@ -88,6 +130,36 @@ Abrir el navegador en:
 
 ```
 http://127.0.0.1:5000
+```
+
+## Ejecutar los tests
+
+Para ejecutar todos los tests:
+
+```bash
+pytest
+```
+
+## Docker
+
+El proyecto incluye un Dockerfile y un .dockerignore para facilitar su ejecución mediante Docker.
+
+Una vez disponible Docker:
+
+```bash
+docker build -t proyecto-data-app .
+```
+
+Luego:
+
+```bash
+docker run -p 5000:5000 proyecto-data-app
+```
+
+La aplicacion estara disponible en:
+
+```
+http://localhost:5000
 ```
 
 ## Capturas
