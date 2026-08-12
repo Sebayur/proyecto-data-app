@@ -1,17 +1,17 @@
 from flask import Flask, jsonify, render_template, request, send_file
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
+from database import engine
 import io
 from validators import validar_usuario
-
-engine = create_engine("sqlite:///database/app.db")
 
 app = Flask(__name__)
 
 #Cargar datos
 def obtener_usuarios():
-    return pd.read_sql("SELECT * FROM usuarios", engine) # Leé el resultado de la consulta SQL y lo guarda en un DataFrame.
-print("APP CORRECTA CARGADA")
+    consulta = "SELECT * FROM usuarios"
+    return pd.read_sql(consulta, engine) # Leé el resultado de la consulta SQL y lo guarda en un DataFrame.
+print("Aplicacion iniciada correctamente")
 @app.route("/")
 def home():
        return render_template("index.html")
@@ -21,9 +21,7 @@ def data():
     df = obtener_usuarios()
     return jsonify(df.to_dict(orient='records'))
 
-@app.route("/agregar", methods=["POST"])
-def agregar_usuario():
-
+def obtener_datos_usuario():
     datos = request.json
 
     nombre = datos["nombre"]
@@ -31,6 +29,20 @@ def agregar_usuario():
     ciudad = datos["ciudad"]
 
     error = validar_usuario(nombre, edad, ciudad)
+
+    if error:
+        return None, error
+
+    return {
+        "nombre": nombre,
+        "edad": edad,
+        "ciudad": ciudad
+    }, None
+
+@app.route("/agregar", methods=["POST"])
+def agregar_usuario():
+
+    datos, error = obtener_datos_usuario()
 
     if error:
         return {"error": error}, 400
@@ -41,9 +53,9 @@ def agregar_usuario():
 
     nuevo = pd.DataFrame([{
         "id": nuevo_id,
-        "nombre": nombre,
-        "edad": edad,
-        "ciudad": ciudad
+        "nombre": datos["nombre"],
+        "edad": datos["edad"],
+        "ciudad": datos["ciudad"]
     }])
 
     nuevo.to_sql(
@@ -72,13 +84,7 @@ def eliminar_usuario(id):
 @app.route("/editar/<int:id>", methods=["PUT"])
 def editar_usuario(id):
 
-    datos = request.json
-
-    nombre = datos["nombre"]
-    edad = datos["edad"]
-    ciudad = datos["ciudad"]
-
-    error = validar_usuario(nombre, edad, ciudad)
+    datos, error = obtener_datos_usuario()
 
     if error:
         return {"error": error}, 400
@@ -94,14 +100,14 @@ def editar_usuario(id):
             """),
             {
                 "id": id,
-                "nombre": nombre,
-                "edad": edad,
-                "ciudad": ciudad
+                "nombre": datos["nombre"],
+                "edad": datos["edad"],
+                "ciudad": datos["ciudad"]
             }
         )
 
     if resultado.rowcount == 0:
-        return {"error": "Usuario no encontrado"}, 404    
+        return {"error": "Usuario no encontrado"}, 404
 
     return {"mensaje": "Usuario actualizado correctamente"}
 
@@ -133,43 +139,28 @@ def exportar_csv():
         download_name="usuarios.csv"
     )
 
-
 @app.route("/export/xlsx")
 def exportar_xlsx():
-    """Exporta los usuarios a un archivo Excel (.xlsx).
 
-    Si no está disponible el motor de Excel (por ejemplo openpyxl no instalado),
-    cae de vuelta a CSV para asegurar que el usuario pueda descargar los datos.
-    """
     df = obtener_usuarios()
 
-    # Intentar generar Excel en memoria
     output = io.BytesIO()
 
-    try:
-        with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            df.to_excel(writer, index=False, sheet_name="Usuarios")
-        output.seek(0)
-
-        return send_file(
-            output,
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            as_attachment=True,
-            download_name="usuarios.xlsx"
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(
+            writer,
+            index=False,
+            sheet_name="Usuarios"
         )
 
-    except Exception:
-        # Si falla la creación de XLSX (p.ej. falta openpyxl), devolver CSV como fallback
-        buffer = io.StringIO()
-        df.to_csv(buffer, index=False)
-        buffer.seek(0)
+    output.seek(0)
 
-        return send_file(
-            io.BytesIO(buffer.getvalue().encode()),
-            mimetype="text/csv",
-            as_attachment=True,
-            download_name="usuarios.xlsx"
-        )
+    return send_file(
+        output,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="usuarios.xlsx"
+    )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
