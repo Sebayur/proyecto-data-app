@@ -1,20 +1,20 @@
-from flask import Flask, jsonify, render_template, request, send_file
-import pandas as pd
-from sqlalchemy import text
-from database import engine
 import io
+
+import pandas as pd
+from flask import Flask, jsonify, render_template, request, send_file
+from sqlalchemy import text
+
+from database import engine
 from validators import validar_usuario
 
 app = Flask(__name__)
 
-#Cargar datos
 def obtener_usuarios():
     consulta = "SELECT * FROM usuarios"
-    return pd.read_sql(consulta, engine) # Leé el resultado de la consulta SQL y lo guarda en un DataFrame.
-print("Aplicacion iniciada correctamente")
+    return pd.read_sql(consulta, engine)
 @app.route("/")
 def home():
-       return render_template("index.html")
+    return render_template("index.html")
 
 @app.route('/data')
 def data():
@@ -67,7 +67,7 @@ def agregar_usuario():
 
     return {"mensaje": "Usuario agregado correctamente"}
 
-@app.route("/eliminar/<int:id>", methods=["DELETE"]) #Cuando JavaScript llame: DELETE /eliminar/5 Flask ejecutará el SQL: DELETE FROM usuarios WHERE id = 5; y responderá: "mensaje": "Usuario eliminado correctamente"
+@app.route("/eliminar/<int:id>", methods=["DELETE"])
 def eliminar_usuario(id):
 
     with engine.begin() as conexion:
@@ -113,22 +113,22 @@ def editar_usuario(id):
 
 @app.route("/usuarios/<int:id>")
 def get_usuario(id):
-       df = obtener_usuarios()
-       usuario = df[df["id"] == id]
+    df = obtener_usuarios()
+    usuario = df[df["id"] == id]
 
-       if usuario.empty:
-              return {"error": "Usuario no encontrado"}, 404
+    if usuario.empty:
+        return {"error": "Usuario no encontrado"}, 404
        
-       return jsonify(usuario.to_dict(orient="records")[0])
+    return jsonify(usuario.to_dict(orient="records")[0])
 
 @app.route("/export/csv")
 def exportar_csv():
 
-    df = obtener_usuarios() #Lee la tabla de la base de datos y la guarda en un DataFrame.
+    df = obtener_usuarios() 
 
     buffer = io.StringIO()
 
-    df.to_csv(buffer, index=False) #Convierte el DataFrame a CSV y lo guarda en un buffer de memoria.
+    df.to_csv(buffer, index=False)
 
     buffer.seek(0)
 
