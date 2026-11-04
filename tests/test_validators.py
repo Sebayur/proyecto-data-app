@@ -37,3 +37,12 @@ def test_ciudad_muy_corta():
 def test_ciudad_vacia():
     assert validar_usuario("Pedro", 25, "") == \
         "La ciudad debe tener al menos 2 caracteres."
+
+def test_nombre_con_numeros():
+    assert validar_usuario("Sebastian123", 25, "CABA") == \
+        "El nombre no puede contener números."
+
+
+def test_ciudad_con_numeros():
+    assert validar_usuario("Sebastian", 25, "CABA123") == \
+        "La ciudad no puede contener números."

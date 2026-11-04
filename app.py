@@ -21,8 +21,17 @@ def data():
     df = obtener_usuarios()
     return jsonify(df.to_dict(orient='records'))
 
+
 def obtener_datos_usuario():
-    datos = request.json
+    datos = request.get_json(silent=True)
+
+    if not isinstance(datos, dict):
+        return None, "Se deben enviar datos en formato JSON."
+
+    campos = ["nombre", "edad", "ciudad"]
+
+    if not all(campo in datos for campo in campos):
+        return None, "Faltan campos obligatorios."
 
     nombre = datos["nombre"]
     edad = datos["edad"]
@@ -47,23 +56,14 @@ def agregar_usuario():
     if error:
         return {"error": error}, 400
 
-    df = obtener_usuarios()
-
-    nuevo_id = df["id"].max() + 1
-
-    nuevo = pd.DataFrame([{
-        "id": nuevo_id,
-        "nombre": datos["nombre"],
-        "edad": datos["edad"],
-        "ciudad": datos["ciudad"]
-    }])
-
-    nuevo.to_sql(
-        "usuarios",
-        engine,
-        if_exists="append",
-        index=False
-    )
+    with engine.begin() as conexion:
+        conexion.execute(
+            text("""
+                INSERT INTO usuarios (nombre, edad, ciudad)
+                VALUES (:nombre, :edad, :ciudad)
+            """),
+            datos
+        )
 
     return {"mensaje": "Usuario agregado correctamente"}
 
@@ -113,13 +113,23 @@ def editar_usuario(id):
 
 @app.route("/usuarios/<int:id>")
 def get_usuario(id):
-    df = obtener_usuarios()
-    usuario = df[df["id"] == id]
 
-    if usuario.empty:
+    with engine.connect() as conexion:
+        resultado = conexion.execute(
+            text("""
+                SELECT id, nombre, edad, ciudad
+                FROM usuarios
+                WHERE id = :id
+            """),
+            {"id": id}
+        )
+
+        usuario = resultado.mappings().first()
+
+    if usuario is None:
         return {"error": "Usuario no encontrado"}, 404
-       
-    return jsonify(usuario.to_dict(orient="records")[0])
+
+    return jsonify(dict(usuario))
 
 @app.route("/export/csv")
 def exportar_csv():

@@ -202,3 +202,35 @@ def test_exportar_xlsx(client):
     )
 
     assert len(response.data) > 0
+
+def test_agregar_usuario_sin_json(client):
+    response = client.post("/agregar")
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == \
+        "Se deben enviar datos en formato JSON."
+
+
+def test_agregar_usuario_con_json_no_objeto(client):
+    response = client.post(
+        "/agregar",
+        json=["Juan", 30, "Rosario"]
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == \
+        "Se deben enviar datos en formato JSON."
+
+
+def test_agregar_usuario_con_campos_faltantes(client):
+    response = client.post(
+        "/agregar",
+        json={
+            "nombre": "Juan",
+            "edad": 30
+        }
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == \
+        "Faltan campos obligatorios."
