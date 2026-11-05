@@ -46,3 +46,35 @@ def test_nombre_con_numeros():
 def test_ciudad_con_numeros():
     assert validar_usuario("Sebastian", 25, "CABA123") == \
         "La ciudad no puede contener números."
+
+
+def test_nombre_no_es_texto():
+    assert validar_usuario(123, 25, "Buenos Aires") == \
+        "El nombre debe ser un texto."
+
+
+def test_ciudad_no_es_texto():
+    assert validar_usuario("Pedro", 25, 123) == \
+        "La ciudad debe ser un texto."
+
+
+def test_edad_decimal():
+    assert validar_usuario("Pedro", 25.5, "Buenos Aires") == \
+        "La edad debe ser un número."
+
+
+def test_edad_boolean():
+    assert validar_usuario("Pedro", True, "Buenos Aires") == \
+        "La edad debe ser un número entero."
+
+
+def test_edad_como_texto_entero():
+    assert validar_usuario("Pedro", "25", "Buenos Aires") is None
+
+
+def test_nombre_con_espacios():
+    assert validar_usuario("  Pedro  ", 25, "Buenos Aires") is None
+
+
+def test_ciudad_con_espacios():
+    assert validar_usuario("Pedro", 25, "  Buenos Aires  ") is None

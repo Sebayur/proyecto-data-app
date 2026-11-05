@@ -659,9 +659,9 @@ document.querySelector("#buscador-nombre").addEventListener("input", filtrar);
 document.querySelector("#buscador-ciudad").addEventListener("input", filtrar);
 document.querySelector("#agregar").addEventListener("click", () => {
 
-    const nombre = document.querySelector("#nombre").value;
+    const nombre = document.querySelector("#nombre").value.trim();
     const edad = document.querySelector("#edad").value;
-    const ciudad = document.querySelector("#ciudad").value;
+    const ciudad = document.querySelector("#ciudad").value.trim();
 
     if (!nombre || !edad || !ciudad) {
         mostrarToast(

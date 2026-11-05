@@ -33,9 +33,9 @@ def obtener_datos_usuario():
     if not all(campo in datos for campo in campos):
         return None, "Faltan campos obligatorios."
 
-    nombre = datos["nombre"]
+    nombre = datos["nombre"].strip() if isinstance(datos["nombre"], str) else datos["nombre"]
     edad = datos["edad"]
-    ciudad = datos["ciudad"]
+    ciudad = datos["ciudad"].strip() if isinstance(datos["ciudad"], str) else datos["ciudad"]
 
     error = validar_usuario(nombre, edad, ciudad)
 
@@ -173,4 +173,4 @@ def exportar_xlsx():
     )
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

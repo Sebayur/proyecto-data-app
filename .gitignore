@@ -13,3 +13,10 @@ __pycache__/
 
 # Archivos temporales
 *.log
+
+# Bases de datos locales y respaldos
+*.db
+
+# Archivos temporales de migración
+usuarios_migracion.csv
+migrar_db.py
