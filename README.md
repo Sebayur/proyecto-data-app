@@ -2,6 +2,8 @@
 
 Aplicación web desarrollada con Python y Flask para gestionar y visualizar datos de usuarios.
 
+**Demo online:** https://proyecto-data-app.onrender.com
+
 ![Vista principal](images/dashboard.png)
 
 ## Tecnologías
@@ -24,57 +26,67 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 
 ### Gestión de usuarios
 
-- Visualización de usuarios almacenados en SQLite
-- Creación de usuarios desde la interfaz
-- Edición de usuarios
-- Eliminación de usuarios
-- Validación de datos
-- Manejo de errores
+- Visualización de usuarios almacenados en SQLite.
+- Creación de usuarios desde la interfaz.
+- Edición de usuarios.
+- Eliminación de usuarios.
+- Validación de datos.
+- Manejo de errores.
 
 ### Búsqueda y navegación
 
-- Búsqueda por nombre
-- Búsqueda por ciudad
-- Ordenamiento ascendente y descendente por columna
-- Paginación de resultados
+- Búsqueda por nombre.
+- Búsqueda por ciudad.
+- Ordenamiento ascendente y descendente por columna.
+- Paginación de resultados.
 
 ### Dashboard
 
-- Cantidad total de usuarios
-- Edad promedio
-- Cantidad de ciudades
-- Mayor edad registrada
-- Distribución de usuarios por ciudad
-- Distribución de usuarios por rango de edad
-- Gráficos interactivos
+- Cantidad total de usuarios.
+- Edad promedio.
+- Cantidad de ciudades.
+- Mayor edad registrada.
+- Distribución de usuarios por ciudad.
+- Distribución de usuarios por rango de edad.
+- Gráficos interactivos.
 
 ### Exportación
 
-- Exportación de datos a CSV
-- Exportación de datos a Excel (.xlsx)
+- Exportación de datos a CSV.
+- Exportación de datos a Excel (.xlsx).
 
 ### Interfaz
 
-- Modo oscuro
-- Persistencia del modo oscuro mediante `localStorage`
-- Notificaciones mediante Toasts
-- Confirmación antes de eliminar usuarios
-- Interfaz responsive
+- Modo oscuro.
+- Persistencia del modo oscuro mediante `localStorage`.
+- Notificaciones mediante Toasts.
+- Confirmación antes de eliminar usuarios.
+- Interfaz responsive.
+
+### API REST
+
+- Endpoint `/data` para consultar los usuarios en formato JSON.
+- Endpoints para crear, editar y eliminar usuarios.
+- Respuestas HTTP y manejo de errores.
 
 ### Testing
 
-- Tests automatizados con Pytest
-- Tests de endpoints de Flask
-- Tests de validaciones
-- Tests de creación, edición y eliminación
-- Tests de exportación
-- Manejo de usuarios inexistentes
+- Tests automatizados con Pytest.
+- Tests de endpoints de Flask.
+- Tests de validaciones.
+- Tests de creación, edición y eliminación.
+- Tests de exportación.
+- Manejo de usuarios inexistentes y solicitudes invalidas.
 
-## Próximas mejoras
+## Arquitectura y base de datos
 
-- Deploy de la aplicación
+La aplicación utiliza **PostgreSQL** en el entorno de producción, desplegado en Render.
 
-## Instalación
+También permite utilizar **SQLite** como base de datos local mediante la configuración predeterminada de `database.py`.
+
+SQLAlchemy se utiliza para gestionar la conexión y ejecutar consultas sobre la base de datos.
+
+## Instalación y ejecución local
 
 Clonar el repositorio:
 
@@ -137,7 +149,7 @@ http://127.0.0.1:5000
 Para ejecutar todos los tests:
 
 ```bash
-pytest
+python -m pytest -v
 ```
 
 ## Docker
