@@ -10,6 +10,7 @@ Aplicación web desarrollada con Python y Flask para gestionar y visualizar dato
 
 - Python
 - Flask
+- PostgreSQL
 - SQLite
 - SQLAlchemy
 - Pandas
